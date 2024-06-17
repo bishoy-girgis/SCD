@@ -76,7 +76,7 @@ class WelcomeScreen4 extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return  MainScreen();
+                              return  const SplashScreen();
                             },
                           ),
                         );

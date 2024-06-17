@@ -102,7 +102,7 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   List<Widget> pages = [
-    const HomeScreen(),
+     HomeScreen(),
     HelpScreen(),
     HistoryScreen(),
     ProfileScreen(),
@@ -111,6 +111,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       body: pages[currentIndex],
       bottomNavigationBar: CurvedNavigationBar(
         items: [

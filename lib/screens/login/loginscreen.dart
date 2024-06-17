@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
+import 'package:toni/Core/services/cache_helper.dart';
 import 'package:toni/Core/widgets/custom_text_form_field.dart';
 import 'package:toni/screens/home/main%20screen.dart';
 import 'package:toni/screens/splash/widgets/dont_have_acc_widget.dart';
@@ -40,7 +41,8 @@ class LoginScreenState extends State<LoginScreen> {
         // Assuming 'token' is a part of the response for successful login
         print(responseData['token']);
         if (responseData['token'] != null) {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
+          SharedPref.set(key: "accessToken", value: (responseData['token']));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
             return MainScreen();
           }));
           // Navigator.pushReplacementNamed(

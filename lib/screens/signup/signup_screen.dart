@@ -43,7 +43,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         print(responseData);
         // Assuming the API returns some form of verification token or success response
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-          return const WelcomeScreen1();
+          return const MainScreen();
         }));
       } else {
         _showErrorDialog('Registration failed: ${response.body}');

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:toni/Core/constants/end_points.dart';
 import 'package:toni/screens/home/main%20screen.dart';
+import 'package:toni/screens/onBoarding/welcome%20screen%201.dart';
 import 'package:toni/screens/splash/splash%20screen.dart';
 import '../../Core/constants/app_colors.dart';
 import '../../Core/widgets/text_builder.dart';
@@ -59,12 +60,12 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
         if (accessToken.isNotEmpty) {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) {
-            return const SplashView();
+            return const MainScreen();
           }));
         } else {
           Navigator.pushReplacement(context,
               MaterialPageRoute(builder: (context) {
-            return MainScreen();
+            return const WelcomeScreen1();
           }));
         }
       });
