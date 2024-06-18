@@ -7,7 +7,7 @@ import 'package:toni/screens/help screen.dart';
 import 'package:toni/screens/history screen.dart';
 import 'package:toni/screens/Scan%20Result.dart';
 import 'package:toni/screens/home/home_screen.dart';
-import 'package:toni/screens/profile screen.dart';
+import 'package:toni/screens/profile/profile%20screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 

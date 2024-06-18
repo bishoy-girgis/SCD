@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../constants/app_colors.dart';
 import '../widgets/text_builder.dart';
@@ -70,21 +71,21 @@ class GlobalMethods {
         timeInSecForIosWeb: 4,
         backgroundColor: _chooseToastColor(state),
         textColor: Colors.white,
-        fontSize: 18.0);
+        fontSize: 14.sp);
   }
 
   static Color _chooseToastColor(ToastStates state) {
     Color color;
     switch (state) {
       case ToastStates.SUCCESS:
-        color = AppColors.secondColorGreen;
+        color = AppColors.darkColor;
         break;
 
       case ToastStates.ERROR:
         color = Colors.red;
         break;
       case ToastStates.WARNING:
-        color = AppColors.darkColor;
+        color = AppColors.secondColorGreen;
         break;
     }
     return color;

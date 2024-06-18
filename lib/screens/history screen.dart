@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HistoryScreen extends StatefulWidget {
   @override
@@ -19,18 +20,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var textTheme = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
-        title: Text('History'),
+        title: Text('History',style: textTheme.bodyLarge),
         centerTitle: true,
+        elevation: 4,
+        shadowColor: Colors.grey,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
       ),
       body: Column(
         children: [
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: TextField(
+           Padding(
+            padding: EdgeInsets.all(10.sp),
+            child: const TextField(
               decoration: InputDecoration(
                 labelText: 'Search',
                 border: OutlineInputBorder(),

@@ -40,6 +40,8 @@ class HelpScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Help', style: textTheme.bodyLarge),
         centerTitle: true,
+        elevation: 4,
+        shadowColor: Colors.grey,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
       ),
@@ -47,7 +49,7 @@ class HelpScreen extends StatelessWidget {
         itemCount: faqs.length,
         itemBuilder: (context, index) {
           return Container(
-            margin: EdgeInsets.symmetric(vertical: 5.h, horizontal: 10.w),
+            margin: EdgeInsets.symmetric(vertical: 15.h, horizontal: 10.w),
             decoration: BoxDecoration(
               color: AppColors.primaryColorGreen,
               borderRadius: BorderRadius.circular(10),
