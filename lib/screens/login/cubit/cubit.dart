@@ -2,9 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:toni/Core/constants/end_points.dart';
-import 'package:toni/Core/error/faliure.dart';
 import 'package:toni/Core/services/cache_helper.dart';
 import 'package:toni/screens/login/cubit/states.dart';
+
+import '../../../Core/error/faliure.dart';
 
 class LoginCubit extends Cubit<LoginState> {
   late final Dio _api;
@@ -16,11 +17,10 @@ class LoginCubit extends Cubit<LoginState> {
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  userLogin() async {
+  void userLogin() async {
     emit(LoginLoadingState());
     try {
-      var response =
-          await _api.get(EndPoints.loginToken, queryParameters: {
+      var response = await _api.get(EndPoints.loginToken, queryParameters: {
         'email': userNameController.text,
         'password': passwordController.text,
       });
@@ -30,29 +30,23 @@ class LoginCubit extends Cubit<LoginState> {
         print("TOKEN : ${SharedPref.get(key: "accessToken")}");
         emit(LoginSuccessState());
       } else {
+        // Handle non-200 status code
+        String errorMessage = response.data["error"] ?? "Unknown error occurred";
         emit(LoginErrorState(
-          Failure(statusCode: '', message: "$response"),
+          Failure(statusCode: response.statusCode.toString(), message: errorMessage),
         ));
       }
-    } on DioException catch (error) {
-      if (error.response != null && error.response!.statusCode == 500) {
-        emit(LoginErrorState(
-          Failure(statusCode: '', message: "Internal server error"),
-        ));
-      } else {
-        print(error.toString());
-        emit(LoginErrorState(
-          Failure(
-              statusCode: '',
-              message:
-                  "There was an unknown error while processing the request."),
-        ));
-      }
-    } catch (error) {
+    } on DioError catch (error) {
+      // Handle Dio errors (e.g., network issues)
       print(error.toString());
-      print("error is ${error.toString()}");
       emit(LoginErrorState(
-        Failure(statusCode: '', message: error.toString()),
+        Failure(statusCode: '', message: "Error Occurred: ${error.message}"),
+      ));
+    } catch (error) {
+      // Handle generic errors
+      print(error.toString());
+      emit(LoginErrorState(
+        Failure(statusCode: '', message: "Error Occurred: $error"),
       ));
     }
   }

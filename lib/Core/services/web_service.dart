@@ -32,8 +32,10 @@ class WebService {
     publicDio.interceptors.clear();
     publicDio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
-        if (token != null && token.isNotEmpty) {
-          options.headers['Authorization'] = "Token $token";
+        if (!options.path.contains(EndPoints.loginToken)) {
+          if (token.isNotEmpty) {
+            options.headers['Authorization'] = "Token $token";
+          }
         }
         log("send request ${options.uri}");
         log("header ${options.headers}");
@@ -54,4 +56,5 @@ class WebService {
       },
     ));
   }
+
 }

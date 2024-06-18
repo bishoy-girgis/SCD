@@ -69,4 +69,19 @@ class ProfileCubit extends Cubit<ProfileState> {
       ));
     }
   }
+
+  deleteAccount()async{
+    emit(ProfileLoadingState());
+    try {
+      var response = await _api.delete(EndPoints.profileData,);
+
+      var userData = UserData.fromJson(response.data);
+      user = userData;
+      emit(ProfileDeleteSuccessState());
+    } catch (error) {
+      emit(ProfileErrorState(
+        Failure(statusCode: '$error', message: error.toString()),
+      ));
+    }
+  }
 }

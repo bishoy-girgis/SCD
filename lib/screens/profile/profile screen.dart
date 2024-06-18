@@ -77,6 +77,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             selectedDate = DateTime.parse(state.userData.birthday!);
             // Update selected gender after successful update
             selectedGender = state.userData.gender == 'M' ? 'Male' : 'Female';
+          } else if(state is ProfileDeleteSuccessState){
+            EasyLoading.dismiss();
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const SplashScreen()),
+                  (route) => false,
+            );
+            GlobalMethods.buildFlutterToast(
+              message: "Account Deleted Successfully",
+              state: ToastStates.SUCCESS,
+            );
           }
         },
         child: BlocBuilder<ProfileCubit, ProfileState>(
@@ -237,6 +248,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ?.copyWith(color: AppColors.pageColor),
                     ),
                   ),
+                  ElevatedButton(
+                    onPressed: () {_showDeleteConfirmation(context);},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                    child: Text(
+                      'Delete Account',
+                      style: textTheme.bodyText2
+                          ?.copyWith(color: AppColors.pageColor),
+                    ),
+                  ),
                 ],
               ),
             );
@@ -272,7 +294,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Are You sure, You want to sign out'),
+          title:  Text('Are You sure, You want to sign out',
+              style: Theme.of(context).textTheme.bodyMedium),
           actions: <Widget>[
             TextButton(
               onPressed: () {
@@ -295,4 +318,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
     );
   }
+  void _showDeleteConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title:  Text('Are You sure, You want to Delete Account',
+              style: Theme.of(context).textTheme.bodyMedium),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Dismiss the dialog
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                ProfileCubit.get(context).deleteAccount();
+              },
+              child: const Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }

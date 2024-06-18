@@ -61,95 +61,98 @@ class LoginScreenState extends State<LoginScreen> {
       },
       builder: (context, state) {
         return Scaffold(
-          body: SafeArea(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding:
-                    EdgeInsets.symmetric(vertical: 40.h, horizontal: 24.w),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: h * 0.15,
-                    ),
-                    Image.asset(
-                      'images/logo-no-background.png',
-                    ),
-                    SizedBox(
-                      height: h * 0.2,
-                    ),
-                    Column(
-                      children: [
-                        CustomTextFormField(
-                            labelText: "Email",
-                            controller: cubit.userNameController,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "please Enter your Email";
-                              }
-                              return null;
-                            },
-                            hintText: "example@gmail.com"),
-                        SizedBox(height: 15.sp),
-                        CustomTextFormField(
-                            labelText: "Password",
-                            controller: cubit.passwordController,
-                            isSecure: isPasswordVisible,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "please enter you password";
-                              }
-                              return null;
-                            },
-                            suffixIcon: isPasswordVisible
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            suffixPressed: () {
-                              setState(() {
-                                isPasswordVisible = !isPasswordVisible;
-                              });
-                            },
-                            hintText: "P@ssw0rd"),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(
-                              'Forgot your password?',
-                              textAlign: TextAlign.center,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: AppColors.primaryColorGreen,
-                                    fontSize: 11.sp,
-                                    decoration: TextDecoration.underline,
-                                    decorationColor:
-                                        AppColors.primaryColorGreen,
-                                  ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20.sp),
-                        CustomElevatedButton(
-                          width: 300.w,
-                          title: Text(
-                            "LogIn",
-                            style: TextStyle(
-                                color: AppColors.pageColor, fontSize: 16.sp),
+          body: Form(
+            key: _formKey,
+            child: SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 40.h, horizontal: 24.w),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: h * 0.15,
+                      ),
+                      Image.asset(
+                        'images/logo-no-background.png',
+                      ),
+                      SizedBox(
+                        height: h * 0.2,
+                      ),
+                      Column(
+                        children: [
+                          CustomTextFormField(
+                              labelText: "Email",
+                              controller: cubit.userNameController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "please Enter your Email";
+                                }
+                                return null;
+                              },
+                              hintText: "example@gmail.com"),
+                          SizedBox(height: 15.sp),
+                          CustomTextFormField(
+                              labelText: "Password",
+                              controller: cubit.passwordController,
+                              isSecure: isPasswordVisible,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "please enter you password";
+                                }
+                                return null;
+                              },
+                              suffixIcon: isPasswordVisible
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              suffixPressed: () {
+                                setState(() {
+                                  isPasswordVisible = !isPasswordVisible;
+                                });
+                              },
+                              hintText: "P@ssw0rd"),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                'Forgot your password?',
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
+                                      color: AppColors.primaryColorGreen,
+                                      fontSize: 11.sp,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor:
+                                          AppColors.primaryColorGreen,
+                                    ),
+                              ),
+                            ],
                           ),
-                          backgroundColor: AppColors.darkColor,
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              await cubit.userLogin();
+                          SizedBox(height: 20.sp),
+                          CustomElevatedButton(
+                            width: 300.w,
+                            title: Text(
+                              "LogIn",
+                              style: TextStyle(
+                                  color: AppColors.pageColor, fontSize: 16.sp),
+                            ),
+                            backgroundColor: AppColors.darkColor,
+                            onPressed: ()  {
+                              if (_formKey.currentState!.validate()) {
+                                 cubit.userLogin();
+                              }
                             }
-                          }
-                        ),
-                        SizedBox(
-                          height: h * 0.15,
-                        ),
-                        const DoNotHaveAccountWidget()
-                      ],
-                    ),
-                  ],
+                          ),
+                          SizedBox(
+                            height: h * 0.15,
+                          ),
+                          const DoNotHaveAccountWidget()
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -16,6 +16,7 @@ final class ProfileUpdateSuccessState extends ProfileState {
 
   ProfileUpdateSuccessState(this.userData);
 }
+final class ProfileDeleteSuccessState extends ProfileState {}
 
 final class ProfileLoadingState extends ProfileState {}
 
