@@ -8,6 +8,7 @@ import 'package:toni/Core/config/my_theme.dart';
 import 'package:toni/Core/services/web_service.dart';
 import 'package:toni/screens/login/cubit/cubit.dart';
 import 'package:toni/screens/profile/cubit/cubit.dart';
+import 'package:toni/screens/scan/cubit/cubit.dart';
 import 'package:toni/screens/splash/splash%20screen.dart';
 import 'package:toni/screens/splash/splash_view.dart';
 import 'Core/services/bloc_observer.dart';
@@ -35,11 +36,14 @@ class SCDetect extends StatelessWidget {
       builder: (context, _) {
         return MultiProvider(
           providers: [
-            BlocProvider<LoginCubit>(
-              create: (context) => LoginCubit(WebService().publicDio),
+            BlocProvider<RegisterCubit>(
+              create: (context) => RegisterCubit(WebService().publicDio),
             ),
             BlocProvider<ProfileCubit>(
               create: (context) => ProfileCubit(WebService().publicDio),
+            ),
+            BlocProvider<ScanCubit>(
+              create: (context) => ScanCubit(WebService().publicDio),
             ),
           ],
           child: Builder(

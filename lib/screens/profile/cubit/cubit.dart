@@ -70,13 +70,32 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
-  deleteAccount()async{
+  updatePassword({
+    required String newPassword,
+    required String oldPassword,
+  }) async {
     emit(ProfileLoadingState());
     try {
-      var response = await _api.delete(EndPoints.profileData,);
+      var response = await _api.put(EndPoints.resetPassword, data: {
+        "new_password": newPassword,
+        "old_password": oldPassword,
+      });
 
-      var userData = UserData.fromJson(response.data);
-      user = userData;
+      emit(ProfileChangePasswordSuccessState());
+    } on DioException catch (error) {
+      emit(ProfileErrorState(
+        Failure(
+            statusCode: '$error', message: "${error.response?.data["error"]}"),
+      ));
+    }
+  }
+
+  deleteAccount() async {
+    emit(ProfileLoadingState());
+    try {
+      var response = await _api.delete(
+        EndPoints.profileData,
+      );
       emit(ProfileDeleteSuccessState());
     } catch (error) {
       emit(ProfileErrorState(

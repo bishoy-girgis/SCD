@@ -1,12 +1,17 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
 import 'package:toni/screens/home/main%20screen.dart';
+import 'package:toni/screens/login/cubit/cubit.dart';
+import 'package:toni/screens/login/cubit/states.dart';
 import 'package:toni/screens/onBoarding/welcome%20screen%201.dart';
 import 'package:toni/screens/signup/widgets/already_have_acc_widget.dart';
 
 import '../../Core/constants/app_colors.dart';
+import '../../Core/services/global_methods.dart';
 import '../../Core/widgets/custom_elevated_button.dart';
 import '../../Core/widgets/custom_text_form_field.dart';
 
@@ -18,144 +23,229 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
   bool isPasswordVisible = true;
-
-  Future<void> register() async {
-    var url = Uri.parse('https://scd.skin/mobile_api/registration/');
-    try {
-      final response = await http.post(url, headers: {}, body: {
-        'name': _nameController.text,
-        'email': _emailController.text,
-        'password': _passwordController.text,
-        'phone': _phoneController.text,
-        'birthday': '2001-03-23',
-        'gender': 'M'
-      });
-      // final responseData = json.decode(response.body);
-      // print(responseData);
-
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-        print(responseData);
-        // Assuming the API returns some form of verification token or success response
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-          return const MainScreen();
-        }));
-      } else {
-        _showErrorDialog('Registration failed: ${response.body}');
-      }
-    } catch (e) {
-      _showErrorDialog('Network error: $e');
-    }
-  }
-
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Error'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('OK'),
-          ),
-        ],
-      ),
-    );
-  }
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
+    var cubit = RegisterCubit.get(context);
     var textTheme = Theme.of(context).textTheme;
     var h = MediaQuery.of(context).size.height;
-    return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 30.w),
-            child: Column(
-              children: [
-                Column(
+    return BlocConsumer<RegisterCubit, LoginState>(listener: (context, state) {
+      if (state is LoginLoadingState) {
+        EasyLoading.show();
+      } else if (state is LoginSuccessState) {
+        EasyLoading.dismiss();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return const MainScreen();
+            },
+          ),
+        );
+        GlobalMethods.buildFlutterToast(
+          message: "Welcome to SCDetect App",
+          state: ToastStates.SUCCESS,
+        );
+      } else if (state is LoginErrorState) {
+        EasyLoading.dismiss();
+        debugPrint("🎐🎐🎐🎐🎐🎐${state.failure.statusCode}");
+        debugPrint("🎐🎐${state.failure.message ?? " "}");
+        GlobalMethods.buildFlutterToast(
+            message: state.failure.message ?? " ", state: ToastStates.ERROR);
+      } else {
+        EasyLoading.dismiss();
+      }
+    }, builder: (context, state) {
+      return Form(
+        key: _formKey,
+        child: Scaffold(
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 30.w),
+                child: Column(
                   children: [
-                    Text(
-                      'Create an account',
-                      style: textTheme.bodyLarge,
+                    Column(
+                      children: [
+                        Text(
+                          'Create an account',
+                          style: textTheme.bodyLarge,
+                        ),
+                        Text(
+                          'Fill your information below ',
+                          style: textTheme.bodySmall,
+                        ),
+                        // Adjust the size as needed
+                        SizedBox(height: h * 0.12),
+                      ],
                     ),
-                    Text(
-                      'Fill your information below ',
-                      style: textTheme.bodySmall,
+                    Column(
+                      children: [
+                        CustomTextFormField(
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Please enter your Name";
+                              }
+                              return null;
+                            },
+                            labelText: "Name",
+                            controller: cubit.nameController,
+                            hintText: "Ahmed Sayed Ali"),
+                        SizedBox(height: 10.h),
+                        CustomTextFormField(
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Please enter your Email";
+                              }
+                              return null;
+                            },
+                            labelText: "Email",
+                            controller: cubit.emailController,
+                            hintText: "example@gmail.com"),
+                        SizedBox(height: 10.h),
+                        CustomTextFormField(
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Please enter your phone no";
+                              }
+                              return null;
+                            },
+                            labelText: "Phone No.",
+                            controller: cubit.phoneController,
+                            hintText: "01234567890"),
+                        SizedBox(height: 10.h),
+                        CustomTextFormField(
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Please enter your password";
+                              }
+                              return null;
+                            },
+                            labelText: "Password",
+                            controller: cubit.passwordController,
+                            isSecure: isPasswordVisible,
+                            suffixIcon: isPasswordVisible
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            suffixPressed: () {
+                              setState(() {
+                                isPasswordVisible = !isPasswordVisible;
+                              });
+                            },
+                            hintText: "P@ssw0rd"),
+                        Row(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.symmetric(horizontal: 5.h),
+                              child: Text(
+                                "Select BirthDate :",
+                                textAlign: TextAlign.start,
+                                style: textTheme.bodyText2,
+                              ),
+                            ),
+                            Expanded(
+                              child: InkWell(
+                                onTap: () {
+                                  showBottomDatePicker();
+                                },
+                                child: Padding(
+                                  padding: EdgeInsets.all(10.sp),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: Border.all(
+                                        color: AppColors.darkColor,
+                                        width: 4,
+                                      ),
+                                    ),
+                                    padding: EdgeInsets.all(12.sp),
+                                    child: Text(
+                                      cubit.selectedDate
+                                          .toString()
+                                          .substring(0, 10),
+                                      style: textTheme.bodyMedium,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        DropdownButtonFormField<String>(
+                          value: cubit.selectedGender,
+                          decoration: InputDecoration(
+                            labelText: 'Gender',
+                            labelStyle: textTheme.bodyText2,
+                          ),
+                          items: ['Male', 'Female'].map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value, style: textTheme.bodyText2),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              cubit.selectedGender = value;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select your gender';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 20.sp),
+                        CustomElevatedButton(
+                          width: 300.w,
+                          title: Text(
+                            "SignUp",
+                            style: TextStyle(
+                                color: AppColors.pageColor, fontSize: 16.sp),
+                          ),
+                          backgroundColor: AppColors.darkColor,
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              cubit.userSignUp();
+                            }
+                          },
+                        ),
+                        SizedBox(
+                          height: 8.h,
+                        ),
+                        const AlreadyHaveAccountWidget(),
+                        SizedBox(
+                          height: h * 0.2,
+                        ),
+                        Text(
+                          'I accept App’s Terms of User and Privacy Policy.',
+                          style: textTheme.bodySmall?.copyWith(fontSize: 11.sp),
+                        ),
+                      ],
                     ),
-                    // Adjust the size as needed
-                    SizedBox(height: h * 0.12),
                   ],
                 ),
-                Column(
-                  children: [
-                    CustomTextFormField(
-                        labelText: "Name",
-                        controller: _nameController,
-                        hintText: "Ahmed Sayed Ali"),
-                    SizedBox(height: 10.h),
-                    CustomTextFormField(
-                        labelText: "Email",
-                        controller: _emailController,
-                        hintText: "example@gmail.com"),
-                    SizedBox(height: 10.h),
-                    CustomTextFormField(
-                        labelText: "Phone No.",
-                        controller: _phoneController,
-                        hintText: "01234567890"),
-                    SizedBox(height: 10.h),
-                    CustomTextFormField(
-                        labelText: "Password",
-                        controller: _passwordController,
-                        isSecure: isPasswordVisible,
-                        suffixIcon: isPasswordVisible
-                            ? Icons.visibility_off
-                            : Icons.visibility,
-                        suffixPressed: () {
-                          setState(() {
-                            isPasswordVisible = !isPasswordVisible;
-                          });
-                        },
-                        hintText: "P@ssw0rd"),
-                    SizedBox(height: 20.sp),
-                    CustomElevatedButton(
-                      width: 300.w,
-                      title: Text(
-                        "SignUp",
-                        style: TextStyle(
-                            color: AppColors.pageColor, fontSize: 16.sp),
-                      ),
-                      backgroundColor: AppColors.darkColor,
-                      onPressed: () async {
-                        await register();
-                      },
-                    ),
-                    SizedBox(
-                      height: 8.h,
-                    ),
-                    const AlreadyHaveAccountWidget(),
-                    SizedBox(
-                      height: h * 0.2,
-                    ),
-                    Text(
-                      'I accept App’s Terms of User and Privacy Policy.',
-                      style: textTheme.bodySmall?.copyWith(fontSize: 11.sp),
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
           ),
         ),
-      ),
+      );
+    });
+  }
+
+  void showBottomDatePicker() async {
+    DateTime? chosenDate = await showDatePicker(
+      context: context,
+      initialDate: RegisterCubit.get(context).selectedDate,
+      firstDate: DateTime(1990),
+      lastDate: DateTime(2030),
     );
+    if (chosenDate == null) return;
+    setState(() {
+      RegisterCubit.get(context).selectedDate = chosenDate;
+    });
   }
 }
 

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:toni/Core/constants/app_colors.dart';
+import 'package:toni/Core/services/cache_helper.dart';
 import 'package:toni/Core/widgets/custom_text_form_field.dart';
 import 'package:toni/screens/profile/change%20password.dart';
 import 'package:toni/screens/splash/splash%20screen.dart';
@@ -77,12 +78,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             selectedDate = DateTime.parse(state.userData.birthday!);
             // Update selected gender after successful update
             selectedGender = state.userData.gender == 'M' ? 'Male' : 'Female';
-          } else if(state is ProfileDeleteSuccessState){
+          } else if (state is ProfileDeleteSuccessState) {
             EasyLoading.dismiss();
+            SharedPref.remove(key: "accessToken");
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const SplashScreen()),
-                  (route) => false,
+              (route) => false,
             );
             GlobalMethods.buildFlutterToast(
               message: "Account Deleted Successfully",
@@ -238,7 +240,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onPressed: () {
                       _showSignOutConfirmation(context);
                     },
-                    // Call the sign out confirmation dialog// Handle sign out
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.darkColor,
                     ),
@@ -249,7 +250,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () {_showDeleteConfirmation(context);},
+                    onPressed: () {
+                      _showDeleteConfirmation(context);
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                     ),
@@ -294,7 +297,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title:  Text('Are You sure, You want to sign out',
+          title: Text('Are You sure, You want to sign out',
               style: Theme.of(context).textTheme.bodyMedium),
           actions: <Widget>[
             TextButton(
@@ -305,6 +308,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             TextButton(
               onPressed: () {
+                SharedPref.remove(key: "accessToken");
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => const SplashScreen()),
@@ -318,12 +322,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
     );
   }
+
   void _showDeleteConfirmation(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title:  Text('Are You sure, You want to Delete Account',
+          title: Text('Are You sure, You want to Delete Account',
               style: Theme.of(context).textTheme.bodyMedium),
           actions: <Widget>[
             TextButton(
@@ -343,5 +348,4 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
     );
   }
-
 }

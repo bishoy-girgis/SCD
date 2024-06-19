@@ -32,7 +32,7 @@ class WebService {
     publicDio.interceptors.clear();
     publicDio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
-        if (!options.path.contains(EndPoints.loginToken)) {
+        if (!options.path.contains(EndPoints.loginToken) && !options.path.contains(EndPoints.signUpToken)) {
           if (token.isNotEmpty) {
             options.headers['Authorization'] = "Token $token";
           }

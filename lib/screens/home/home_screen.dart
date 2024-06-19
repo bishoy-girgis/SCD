@@ -12,10 +12,10 @@ class HomeScreen extends StatelessWidget {
 
   List<Widget> slidesImages = [
     Image.asset("images/cancer1.jpg"),
-    Image.asset("images/cancer2.png"),
+    Image.asset("images/cancer2.jpg"),
     Image.asset("images/cancer3.jpg"),
-    Image.asset("images/cancer4.png"),
-    Image.asset("images/cancer5.png"),
+    Image.asset("images/cancer7.jpg"),
+    Image.asset("images/cancer5.jpg"),
     Image.asset("images/cancer6.jpg"),
   ];
   List<DoctorModel> doctors = [

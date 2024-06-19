@@ -28,9 +28,9 @@ class LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var cubit = LoginCubit.get(context);
+    var cubit = RegisterCubit.get(context);
     var h = MediaQuery.of(context).size.height;
-    return BlocConsumer<LoginCubit,LoginState>(
+    return BlocConsumer<RegisterCubit,LoginState>(
       listener: (context, state) {
         if (state is LoginLoadingState) {
           EasyLoading.show();
@@ -83,7 +83,7 @@ class LoginScreenState extends State<LoginScreen> {
                         children: [
                           CustomTextFormField(
                               labelText: "Email",
-                              controller: cubit.userNameController,
+                              controller: cubit.emailController,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return "please Enter your Email";

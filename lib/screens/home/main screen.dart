@@ -3,13 +3,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:toni/Core/constants/app_colors.dart';
-import 'package:toni/screens/help screen.dart';
-import 'package:toni/screens/history screen.dart';
-import 'package:toni/screens/Scan%20Result.dart';
+import 'package:toni/screens/help/help%20screen.dart';
+import 'package:toni/screens/history/history%20screen.dart';
+import 'package:toni/screens/scan/Scan%20Result.dart';
 import 'package:toni/screens/home/home_screen.dart';
 import 'package:toni/screens/profile/profile%20screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:toni/screens/scan/cubit/cubit.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -20,6 +21,35 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int currentIndex = 0;
+  File? image;
+  final ImagePicker picker = ImagePicker();
+
+  Future<void> chooseImage({required bool camera}) async {
+    final pickedFile = await picker.pickImage(
+      imageQuality: 10,
+      source: camera ? ImageSource.camera : ImageSource.gallery,
+    );
+
+    if (pickedFile != null) {
+      setState(() {
+        image = File(pickedFile.path);
+      });
+      if (!mounted) return;
+     await ScanCubit.get(context).scan(image: image!);
+      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ScanResult(
+            image: image!,
+          ),
+        ),
+      );
+    } else {
+      if (!mounted) return;
+      Navigator.pop(context);
+    }
+  }
 
   void _showPopup(BuildContext context) {
     showModalBottomSheet(
@@ -32,30 +62,12 @@ class _MainScreenState extends State<MainScreen> {
               ListTile(
                 leading: const Icon(Icons.camera_alt),
                 title: const Text('Camera'),
-                onTap: ()  {
-                   takeImage();
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ScanResult(
-                          image: image,
-                        ),
-                      ));
-                },
+                onTap: () => chooseImage(camera: true),
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library),
                 title: const Text('Photo'),
-                onTap: ()  {
-                   getImage();
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ScanResult(
-                          image: image,
-                        ),
-                      ));
-                },
+                onTap: () => chooseImage(camera: false),
               ),
               ListTile(
                 leading: const Icon(Icons.cancel),
@@ -71,38 +83,8 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  File? image;
-  final Picker = ImagePicker();
-
-  Future getImage() async {
-    final pickedImage = await Picker.pickImage(source: ImageSource.gallery);
-
-    setState(() {
-      if (pickedImage != null) {
-        image = File(pickedImage.path);
-      } else {
-        print("No image is picked");
-      }
-    });
-  }
-
-  File? pic;
-  final taker = ImagePicker();
-
-  Future takeImage() async {
-    final takedImage = await Picker.pickImage(source: ImageSource.camera);
-
-    setState(() {
-      if (takedImage != null) {
-        image = File(takedImage.path);
-      } else {
-        print("No image is picked");
-      }
-    });
-  }
-
   List<Widget> pages = [
-     HomeScreen(),
+    HomeScreen(),
     HelpScreen(),
     HistoryScreen(),
     ProfileScreen(),

@@ -7,21 +7,25 @@ import 'package:toni/screens/login/cubit/states.dart';
 
 import '../../../Core/error/faliure.dart';
 
-class LoginCubit extends Cubit<LoginState> {
+class RegisterCubit extends Cubit<LoginState> {
   late final Dio _api;
 
-  LoginCubit(this._api) : super(LoginInitial());
+  RegisterCubit(this._api) : super(LoginInitial());
 
-  static LoginCubit get(context) => BlocProvider.of(context);
+  static RegisterCubit get(context) => BlocProvider.of(context);
 
-  final TextEditingController userNameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  DateTime selectedDate = DateTime(2000);
+  String? selectedGender;
 
   void userLogin() async {
     emit(LoginLoadingState());
     try {
       var response = await _api.get(EndPoints.loginToken, queryParameters: {
-        'email': userNameController.text,
+        'email': emailController.text,
         'password': passwordController.text,
       });
 
@@ -31,9 +35,12 @@ class LoginCubit extends Cubit<LoginState> {
         emit(LoginSuccessState());
       } else {
         // Handle non-200 status code
-        String errorMessage = response.data["error"] ?? "Unknown error occurred";
+        String errorMessage =
+            response.data["error"] ?? "Unknown error occurred";
         emit(LoginErrorState(
-          Failure(statusCode: response.statusCode.toString(), message: errorMessage),
+          Failure(
+              statusCode: response.statusCode.toString(),
+              message: errorMessage),
         ));
       }
     } on DioError catch (error) {
@@ -47,6 +54,29 @@ class LoginCubit extends Cubit<LoginState> {
       print(error.toString());
       emit(LoginErrorState(
         Failure(statusCode: '', message: "Error Occurred: $error"),
+      ));
+    }
+  }
+
+  userSignUp() async {
+    emit(LoginLoadingState());
+    try {
+      var response = await _api.post(EndPoints.signUpToken, data: {
+        'name':nameController.text,
+        'email': emailController.text,
+        'password': passwordController.text,
+        'phone': phoneController.text,
+        'gender': selectedGender == 'Male' ? 'M' : 'F',
+        'birthday': selectedDate.toString().substring(0, 10),
+      });
+
+      SharedPref.set(key: "accessToken", value: response.data['token']);
+      print("TOKEN : ${SharedPref.get(key: "accessToken")}");
+      emit(LoginSuccessState());
+    } on DioException catch (error) {
+      print(error.toString());
+      emit(LoginErrorState(
+        Failure(statusCode: '', message: "${ error.response?.data['error']}"),
       ));
     }
   }
